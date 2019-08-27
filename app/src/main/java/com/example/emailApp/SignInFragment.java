@@ -1,5 +1,4 @@
-package com.example.email_app;
-
+package com.example.emailApp;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,33 +12,30 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.example.email_app.yandex.YandexEmailReader;
-
 //Фрагмент авторизации
 public class SignInFragment extends Fragment {
-
 
     public SignInFragment() {
         // Required empty public constructor
     }
 
-    EditText login;
-    EditText password;
+    EditText mLogin;
+    EditText mPassword;
 
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_sign_in, container, false);
-        login = view.findViewById(R.id.loginText);
-        password = view.findViewById(R.id.passwordText);
+        mLogin = view.findViewById(R.id.loginText);
+        mPassword = view.findViewById(R.id.passwordText);
         Button signInButton = view.findViewById(R.id.singInButton);
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getActivity(), MailService.class);
-                intent.putExtra(MailService.LOGIN_TAG, login.getText().toString() + "@yandex.com");
-                intent.putExtra(MailService.PASSWORD_TAG, password.getText().toString());
+                intent.putExtra(MailService.LOGIN_TAG, mLogin.getText().toString() + "@yandex.com");
+                intent.putExtra(MailService.PASSWORD_TAG, mPassword.getText().toString());
                 intent.putExtra(MailService.SERVER_TAG, "yandex.com");
                 getActivity().startService(intent);
             }

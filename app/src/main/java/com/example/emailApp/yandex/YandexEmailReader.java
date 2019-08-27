@@ -1,10 +1,8 @@
-package com.example.email_app.yandex;
+package com.example.emailApp.yandex;
 
-import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.example.email_app.EmailAuthenticator;
+import com.example.emailApp.EmailAuthenticator;
 
 import java.util.Properties;
 
@@ -17,8 +15,7 @@ import javax.mail.Store;
 
 public class YandexEmailReader {
 
-    private static final String YANDEX_ERROR_LOG = "YANDEX_ERROR";
-    private static final String YANDEX_DEBUG_LOG = "YANDEX_DEBUG";
+    private static final String TAG = "YandexEmailReader";
 
     private static final String SERVER = "yandex.com";
     private static final String IMAP_SERVER = "imap." + SERVER;
@@ -28,21 +25,18 @@ public class YandexEmailReader {
     public static final int NO_SUCH_PROVIDER_ERROR_CODE = -2;
     public static final int MESSAGING_ERROR_CODE = -3;
 
-    private String email;
-    private String password;
+    private String mEmail;
+    private String mPassword;
 
-    private Session session = null;
+    private Session mSession = null;
 
 
     public YandexEmailReader(String email, String password) {
-        this.email = email;
-        this.password = password;
+        mEmail = email;
+        mPassword = password;
     }
 
-    public boolean init_session() {
-
-        if(session != null)
-            return true;
+    public boolean initSession() {
 
         //Создание свойств подключения
         Properties properties =  new Properties();
@@ -51,35 +45,35 @@ public class YandexEmailReader {
         properties.put("mail.imap.ssl.enable", "true");
         properties.put("mail.imap.port", Integer.toString(IMAP_PORT));
 
-        Authenticator authenticator = new EmailAuthenticator(email, password);
+        Authenticator authenticator = new EmailAuthenticator(mEmail, mPassword);
 
-        session = Session.getDefaultInstance(properties, authenticator);
-        session.setDebug(false);
+        mSession = Session.getDefaultInstance(properties, authenticator);
+        mSession.setDebug(false);
         return true;
     }
 
     public Integer getUnreadMessageCount() {
-        if(session==null) {
-            Log.d(YANDEX_ERROR_LOG, "Session is null");
+        if(mSession==null) {
+            Log.d(TAG, "Session is null");
             return SESSION_NULL_ERROR_CODE;
         }
         try {
-            Store store = session.getStore();
-            store.connect(IMAP_SERVER, email, password);
-            Log.d(YANDEX_DEBUG_LOG, "Store is connected");
+            Store store = mSession.getStore();
+            store.connect(IMAP_SERVER, mEmail, mPassword);
+            Log.d(TAG, "Store is connected");
 
             Folder inbox = store.getFolder("INBOX");
             inbox.open(Folder.READ_ONLY);
-            Log.d(YANDEX_DEBUG_LOG, "INBOX Folder in opened");
+            Log.d(TAG, "INBOX Folder in opened");
 
             //Получение числа непрочитанных сообщений
             return inbox.getUnreadMessageCount();
 
         } catch (NoSuchProviderException nspEx) {
-            Log.d(YANDEX_ERROR_LOG, nspEx.getMessage());
+            Log.d(TAG, nspEx.getMessage());
             return NO_SUCH_PROVIDER_ERROR_CODE;
         } catch (MessagingException mEx) {
-            Log.d(YANDEX_ERROR_LOG, mEx.getMessage());
+            Log.d(TAG, mEx.getMessage());
             return MESSAGING_ERROR_CODE;
         }
     }

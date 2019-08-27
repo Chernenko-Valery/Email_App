@@ -1,13 +1,11 @@
-package com.example.email_app;
+package com.example.emailApp;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.widget.Toast;
 
-public class MailReciever extends BroadcastReceiver {
+public class MailReceiver extends BroadcastReceiver {
 
     public static final String UNREAD_MESSAGE_COUNT_INTENT_FLAG = "com.example.email_app.UNREAD_MESSAGE_COUNT_INTENT_FLAG";
     public static final String UNREAD_MESSAGE_COUNT_TAG = "UNREAD_MESSAGE_COUNT";

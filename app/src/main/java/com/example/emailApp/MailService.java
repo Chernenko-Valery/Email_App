@@ -1,17 +1,15 @@
-package com.example.email_app;
+package com.example.emailApp;
 
 import android.app.IntentService;
-import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.example.email_app.yandex.YandexEmailReader;
+import com.example.emailApp.yandex.YandexEmailReader;
 
 public class MailService extends IntentService {
 
-    private static final String MAIL_DEBUG_LOG = "MAIL_DEBUG";
+    private static final String TAG = "MailService";
 
     public static final String LOGIN_TAG = "LOGIN";
     public static final String PASSWORD_TAG = "PASSWORD";
@@ -37,11 +35,11 @@ public class MailService extends IntentService {
         String server = bundle.getString(SERVER_TAG);
         if (server.equals(YANDEX_SERVER)) {
             YandexEmailReader yandexEmailReader = new YandexEmailReader(login, password);
-            if (yandexEmailReader.init_session()) {
+            if (yandexEmailReader.initSession()) {
                 int unreadMessageCount = yandexEmailReader.getUnreadMessageCount();
-                Log.d(MAIL_DEBUG_LOG, Integer.toString(unreadMessageCount));
-                Intent unreadMessageCountIntent = new Intent(MailReciever.UNREAD_MESSAGE_COUNT_INTENT_FLAG);
-                unreadMessageCountIntent.putExtra(MailReciever.UNREAD_MESSAGE_COUNT_TAG, unreadMessageCount);
+                Log.d(TAG, Integer.toString(unreadMessageCount));
+                Intent unreadMessageCountIntent = new Intent(MailReceiver.UNREAD_MESSAGE_COUNT_INTENT_FLAG);
+                unreadMessageCountIntent.putExtra(MailReceiver.UNREAD_MESSAGE_COUNT_TAG, unreadMessageCount);
                 sendBroadcast(unreadMessageCountIntent);
             }
         }

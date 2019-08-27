@@ -1,4 +1,4 @@
-package com.example.email_app;
+package com.example.emailApp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -7,7 +7,7 @@ import android.os.Bundle;
 
 public class MainActivity extends AppCompatActivity {
 
-    MailReciever mailReciever = new MailReciever();
+    MailReceiver mMailReceiver = new MailReceiver();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,12 +18,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        registerReceiver(mailReciever, new IntentFilter(MailReciever.UNREAD_MESSAGE_COUNT_INTENT_FLAG));
+        registerReceiver(mMailReceiver, new IntentFilter(MailReceiver.UNREAD_MESSAGE_COUNT_INTENT_FLAG));
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(mailReciever);
+        unregisterReceiver(mMailReceiver);
     }
 }
