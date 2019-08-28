@@ -7,11 +7,12 @@ import android.os.Bundle;
 
 public class MainActivity extends AppCompatActivity {
 
+    /** Поле - приёмщик сообщений */
     MailReceiver mMailReceiver = new MailReceiver();
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreate(Bundle aSavedInstanceState) {
+        super.onCreate(aSavedInstanceState);
         setContentView(R.layout.activity_main);
     }
 

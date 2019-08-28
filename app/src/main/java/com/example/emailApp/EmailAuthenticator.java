@@ -3,18 +3,26 @@ package com.example.emailApp;
 import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;
 
+/** Класс аутентификатор */
 public class EmailAuthenticator extends Authenticator {
 
-    private String mLogin;
+    /** Поле почтовый адрес*/
+    private String mEmail;
+    /** Поле пароль */
     private String mPassword;
 
-    public EmailAuthenticator(String login, String password) {
-        mLogin = login;
-        mPassword = password;
+    /**
+     * Конструктор создание нового объекта с определенными значениями
+     * @param aEmail - почтовый адрес
+     * @param aPassword - пароль
+     */
+    public EmailAuthenticator(String aEmail, String aPassword) {
+        mEmail = aEmail;
+        mPassword = aPassword;
     }
 
     @Override
     protected PasswordAuthentication getPasswordAuthentication() {
-        return new PasswordAuthentication(mLogin, mPassword);
+        return new PasswordAuthentication(mEmail, mPassword);
     }
 }

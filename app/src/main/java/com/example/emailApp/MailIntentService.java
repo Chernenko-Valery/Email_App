@@ -7,9 +7,12 @@ import android.util.Log;
 
 import com.example.emailApp.yandex.YandexEmailReader;
 
-public class MailService extends IntentService {
+/**
+ * Класс - наследник IntentService для обработки запросов в фоновом режиме
+ */
+public class MailIntentService extends IntentService {
 
-    private static final String TAG = "MailService";
+    private static final String TAG = "MailIntentService";
 
     public static final String LOGIN_TAG = "LOGIN";
     public static final String PASSWORD_TAG = "PASSWORD";
@@ -17,9 +20,8 @@ public class MailService extends IntentService {
 
     private static final String YANDEX_SERVER = "yandex.com";
 
-
-    public MailService() {
-        super(MailService.class.getSimpleName());
+    public MailIntentService() {
+        super(MailIntentService.class.getSimpleName());
     }
 
     @Override
@@ -28,20 +30,18 @@ public class MailService extends IntentService {
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
-        Bundle bundle = intent.getExtras();
+    protected void onHandleIntent(Intent aIntent) {
+        Bundle bundle = aIntent.getExtras();
         String login = bundle.getString(LOGIN_TAG);
         String password = bundle.getString(PASSWORD_TAG);
         String server = bundle.getString(SERVER_TAG);
         if (server.equals(YANDEX_SERVER)) {
             YandexEmailReader yandexEmailReader = new YandexEmailReader(login, password);
-            if (yandexEmailReader.initSession()) {
-                int unreadMessageCount = yandexEmailReader.getUnreadMessageCount();
-                Log.d(TAG, Integer.toString(unreadMessageCount));
-                Intent unreadMessageCountIntent = new Intent(MailReceiver.UNREAD_MESSAGE_COUNT_INTENT_FLAG);
-                unreadMessageCountIntent.putExtra(MailReceiver.UNREAD_MESSAGE_COUNT_TAG, unreadMessageCount);
-                sendBroadcast(unreadMessageCountIntent);
-            }
+            int unreadMessageCount = yandexEmailReader.getUnreadMessageCount();
+            Log.d(TAG, Integer.toString(unreadMessageCount));
+            Intent unreadMessageCountIntent = new Intent(MailReceiver.UNREAD_MESSAGE_COUNT_INTENT_FLAG);
+            unreadMessageCountIntent.putExtra(MailReceiver.UNREAD_MESSAGE_COUNT_TAG, unreadMessageCount);
+            sendBroadcast(unreadMessageCountIntent);
         }
     }
 }

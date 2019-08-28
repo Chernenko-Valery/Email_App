@@ -16,7 +16,7 @@
             android:enabled="true"/>
 
         <service
-            android:name=".MailService"
+            android:name=".MailIntentService"
             android:exported="false" />
 
         <activity android:name=".MainActivity">

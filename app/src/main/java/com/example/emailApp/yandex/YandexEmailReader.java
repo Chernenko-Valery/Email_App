@@ -13,6 +13,9 @@ import javax.mail.NoSuchProviderException;
 import javax.mail.Session;
 import javax.mail.Store;
 
+/**
+ * Класс, осуществяющий взаимодействие пользователя с imap сервером Яндекс Почты
+ */
 public class YandexEmailReader {
 
     private static final String TAG = "YandexEmailReader";
@@ -21,23 +24,30 @@ public class YandexEmailReader {
     private static final String IMAP_SERVER = "imap." + SERVER;
     private static final Integer IMAP_PORT = 993;
 
-    public static final int SESSION_NULL_ERROR_CODE = -1;
-    public static final int NO_SUCH_PROVIDER_ERROR_CODE = -2;
-    public static final int MESSAGING_ERROR_CODE = -3;
+    /** Коды ошибок */
+    public static final int NO_SUCH_PROVIDER_ERROR_CODE = -1;
+    public static final int MESSAGING_ERROR_CODE = -2;
 
+    /** Поле почтовый адрес */
     private String mEmail;
+    /** Поле пароль */
     private String mPassword;
 
-    private Session mSession = null;
-
-
-    public YandexEmailReader(String email, String password) {
-        mEmail = email;
-        mPassword = password;
+    /**
+     * Констуктор - создание нового объекта с определенными значениями
+     * @param aEmail - почтовый адрес
+     * @param aPassword - пароль
+     */
+    public YandexEmailReader(String aEmail, String aPassword) {
+        mEmail = aEmail;
+        mPassword = aPassword;
     }
 
-    public boolean initSession() {
-
+    /**
+     * Функция создания нового объекта класса Session по заданным параметрам в объекте
+     * @return возвращает новый объект класса Session
+     */
+    private Session getSession() {
         //Создание свойств подключения
         Properties properties =  new Properties();
         properties.put("mail.debug", "false");
@@ -47,18 +57,21 @@ public class YandexEmailReader {
 
         Authenticator authenticator = new EmailAuthenticator(mEmail, mPassword);
 
-        mSession = Session.getDefaultInstance(properties, authenticator);
-        mSession.setDebug(false);
-        return true;
+        Session session = Session.getDefaultInstance(properties, authenticator);
+        session.setDebug(false);
+        return session;
     }
 
+    /**
+     * Функция получения количесва непрочитанных входящих сообщений
+     * @return возвращает количество непрочитанных входящих сообщений в случае успеха,
+     * @return иначе возвращает один из кодов ошибки класса YandexEmailReader
+     */
     public Integer getUnreadMessageCount() {
-        if(mSession==null) {
-            Log.d(TAG, "Session is null");
-            return SESSION_NULL_ERROR_CODE;
-        }
         try {
-            Store store = mSession.getStore();
+            Session session = getSession();
+
+            Store store = session.getStore();
             store.connect(IMAP_SERVER, mEmail, mPassword);
             Log.d(TAG, "Store is connected");
 
@@ -68,7 +81,6 @@ public class YandexEmailReader {
 
             //Получение числа непрочитанных сообщений
             return inbox.getUnreadMessageCount();
-
         } catch (NoSuchProviderException nspEx) {
             Log.d(TAG, nspEx.getMessage());
             return NO_SUCH_PROVIDER_ERROR_CODE;
