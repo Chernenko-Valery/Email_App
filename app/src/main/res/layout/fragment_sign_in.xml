@@ -20,6 +20,7 @@
                 <EditText
                     android:id="@+id/loginText"
                     android:selectAllOnFocus="true"
+                    android:text="val3riy.chernenko"
                     android:hint="login"
                     android:layout_weight="1" />
                 <TextView
@@ -34,6 +35,7 @@
                 <EditText
                     android:id="@+id/passwordText"
                     android:selectAllOnFocus="true"
+                    android:text="vvv50205020Y"
                     android:inputType="textPassword"
                     android:hint="password"
                     android:layout_weight="1"/>

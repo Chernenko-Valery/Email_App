@@ -48,7 +48,7 @@ public class MailIntentService extends IntentService {
         Messenger messenger = bundle.getParcelable(MESSENGER_TAG);
         if (server.equals(YANDEX_SERVER)) {
             YandexEmailReader yandexEmailReader = new YandexEmailReader(login, password);
-            int unreadMessageCount = yandexEmailReader.getUnreadMessageCount();
+            int unreadMessageCount = yandexEmailReader.getUnreadMessageCount(yandexEmailReader.getSession());
             Log.d(TAG, Integer.toString(unreadMessageCount));
             //Intent unreadMessageCountIntent = new Intent(MailReceiver.UNREAD_MESSAGE_COUNT_INTENT_FLAG);
             //unreadMessageCountIntent.putExtra(MailReceiver.UNREAD_MESSAGE_COUNT_TAG, unreadMessageCount);
