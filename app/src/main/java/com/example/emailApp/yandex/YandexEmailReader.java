@@ -98,10 +98,10 @@ public class YandexEmailReader {
         } catch (MessagingException mEx) {
             Log.d(TAG, mEx.getMessage());
             return MESSAGING_ERROR_CODE;
-        } catch (IOException e) {
+        }/* catch (IOException e) {
             e.printStackTrace();
             return -55555;
-        }
+        }*/
     }
 
     /**
