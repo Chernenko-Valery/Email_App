@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,51 +20,50 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 /**
- * Фрагмент содержащий поля для ввода логина и пароля, а также кнопку, по которой осуществляется вход
+ * Fragment that containing fields for entering a login and password, and a button for entering
  */
 public class SignInFragment extends Fragment {
 
-    /** Пустой конструктор */
+    /** Class constructor */
     public SignInFragment() {
         // Required empty public constructor
     }
 
-    /** Поле - логин */
-    EditText mLogin;
-    /** Поле - пароль */
-    EditText mPassword;
+    /** EditText with login without server */
+    private EditText mLogin;
+    /** EditText with password */
+    private EditText mPassword;
 
     /**
-     * Поле - Handler для обработки сообщений от MailIntentService
+     * Handler for handling message from MailIntentService
      */
-    Handler mUiHandler = new Handler(Looper.getMainLooper()) {
+    private final Handler mUiHandler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(@NonNull Message aMsg) {
             if(aMsg.what == MailIntentService.UNREAD_MESSAGE_COUNT_WHAT_TAG) {
                 if(aMsg.arg1 >= 0) {
-                    Toast toast = Toast.makeText(getContext(), "Количество непрочитанных сообщений = " + aMsg.arg1, Toast.LENGTH_LONG);
-                    toast.show();
+                    Toast.makeText(getContext(), "Count of unread messages = "
+                            + aMsg.arg1, Toast.LENGTH_LONG).show();
                 } else {
-                    Toast toast = Toast.makeText(getContext(), "ошибка с кодом: " + aMsg.arg1, Toast.LENGTH_SHORT);
-                    toast.show();
+                    Toast.makeText(getContext(), "Error: " + aMsg.arg1, Toast.LENGTH_SHORT).show();
                 }
             }
         }
     };
 
     /**
-     * Поле - Messenger для взаимодействия с MailIntentService
+     * Messenger for interaction with MailIntentService
      */
-    Messenger mMessenger = new Messenger(mUiHandler);
+    private final Messenger mMessenger = new Messenger(mUiHandler);
 
     @Override
-    public View onCreateView(final LayoutInflater aInflater, ViewGroup aContainer,
+    public View onCreateView(final @NonNull LayoutInflater aInflater, ViewGroup aContainer,
                              Bundle aSavedInstanceState) {
         // Inflate the layout for this fragment
         View view = aInflater.inflate(R.layout.fragment_sign_in, aContainer, false);
         mLogin = view.findViewById(R.id.loginText);
         mPassword = view.findViewById(R.id.passwordText);
-        Button signInButton = view.findViewById(R.id.singInButton);
+        final Button signInButton = view.findViewById(R.id.singInButton);
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -72,7 +72,7 @@ public class SignInFragment extends Fragment {
                 intent.putExtra(MailIntentService.PASSWORD_TAG, mPassword.getText().toString());
                 intent.putExtra(MailIntentService.SERVER_TAG, "yandex.com");
                 intent.putExtra(MailIntentService.MESSENGER_TAG, mMessenger);
-                getActivity().startService(intent);
+                if(getActivity()!=null) getActivity().startService(intent);
             }
         });
         return view;

@@ -1,26 +1,20 @@
 package com.example.emailApp.yandex;
 
-import android.content.Intent;
 import android.util.Log;
 
 import com.example.emailApp.EmailAuthenticator;
 
-import java.io.DataInputStream;
-import java.io.IOException;
 import java.util.Properties;
 
 import javax.mail.Authenticator;
 import javax.mail.Folder;
-import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.Multipart;
 import javax.mail.NoSuchProviderException;
-import javax.mail.Part;
 import javax.mail.Session;
 import javax.mail.Store;
 
 /**
- * Класс, осуществяющий взаимодействие пользователя с imap сервером Яндекс Почты
+ * A class that implements user interaction with the Yandex mail imap server
  */
 public class YandexEmailReader {
 
@@ -30,19 +24,19 @@ public class YandexEmailReader {
     private static final String IMAP_SERVER = "imap." + SERVER;
     private static final Integer IMAP_PORT = 993;
 
-    /** Коды ошибок */
-    public static final int NO_SUCH_PROVIDER_ERROR_CODE = -1;
-    public static final int MESSAGING_ERROR_CODE = -2;
+    /** Error Code */
+    private static final int NO_SUCH_PROVIDER_ERROR_CODE = -1;
+    private static final int MESSAGING_ERROR_CODE = -2;
 
-    /** Поле почтовый адрес */
-    private String mEmail;
-    /** Поле пароль */
-    private String mPassword;
+    /** Email */
+    private final String mEmail;
+    /** Password */
+    private final String mPassword;
 
     /**
-     * Констуктор - создание нового объекта с определенными значениями
-     * @param aEmail - почтовый адрес
-     * @param aPassword - пароль
+     * Class constructor specifying user's email and password
+     * @param aEmail - email
+     * @param aPassword - password
      */
     public YandexEmailReader(String aEmail, String aPassword) {
         mEmail = aEmail;
@@ -50,12 +44,12 @@ public class YandexEmailReader {
     }
 
     /**
-     * Функция создания нового объекта класса Session по заданным параметрам в объекте
-     * @return возвращает новый объект класса Session
+     * Method that returns a new Session object according to the parameters specified in the class
+     * @return new Session object
      */
     public Session getSession() {
         //Создание свойств подключения
-        Properties properties =  new Properties();
+        final Properties properties =  new Properties();
         properties.put("mail.debug", "false");
         properties.put("mail.store.protocol", "imaps");
         properties.put("mail.imap.ssl.enable", "true");
@@ -63,50 +57,39 @@ public class YandexEmailReader {
 
         Authenticator authenticator = new EmailAuthenticator(mEmail, mPassword);
 
-        Session session = Session.getDefaultInstance(properties, authenticator);
+        final Session session = Session.getDefaultInstance(properties, authenticator);
         session.setDebug(false);
         return session;
     }
 
     /**
-     * Функция получения количесва непрочитанных входящих сообщений
-     * @return возвращает количество непрочитанных входящих сообщений в случае успеха,
-     * @return иначе возвращает один из кодов ошибки класса YandexEmailReader
+     * Method that returns count of unread messages in user's email
+     * @return count of unread messages if successful,
+     * error code as a negative number otherwise
      */
-    public Integer getUnreadMessageCount(Session aSession) {
+    public int getUnreadMessageCount(Session aSession) {
         try {
-            Store store = aSession.getStore();
+            final Store store = aSession.getStore();
             store.connect(IMAP_SERVER, mEmail, mPassword);
             Log.d(TAG, "Store is connected");
 
-            Folder inbox = store.getFolder("INBOX");
+            final Folder inbox = store.getFolder("INBOX");
             inbox.open(Folder.READ_ONLY);
             Log.d(TAG, "INBOX Folder in opened");
 
-            /*
-            Message[] messages = inbox.getMessages();
-            for (int i =0; i < messages.length; i++) {
-                Log.d(TAG, messages[i].getSubject());
-                Log.d(TAG, getText(messages[i]));
-            }*/
-
-            //Получение числа непрочитанных сообщений
             return inbox.getUnreadMessageCount();
-        } catch (NoSuchProviderException nspEx) {
-            Log.d(TAG, nspEx.getMessage());
+        } catch (NoSuchProviderException aE) {
+            if(aE.getMessage()!=null) Log.d(TAG, aE.getMessage());
+            //TODO define exception handling
             return NO_SUCH_PROVIDER_ERROR_CODE;
-        } catch (MessagingException mEx) {
-            Log.d(TAG, mEx.getMessage());
+        } catch (MessagingException aE) {
+            if(aE.getMessage()!=null) Log.d(TAG, aE.getMessage());
+            //TODO define exception handling
             return MESSAGING_ERROR_CODE;
-        }/* catch (IOException e) {
-            e.printStackTrace();
-            return -55555;
-        }*/
+        }
     }
 
-    /**
-     * Return the primary text content of the message.
-     */
+    /*
     private String getText(Part p) throws MessagingException, IOException {
         if (p.isMimeType("text/*")) {
             String s = (String)p.getContent();
@@ -143,5 +126,5 @@ public class YandexEmailReader {
         }
 
         return null;
-    }
+    }*/
 }

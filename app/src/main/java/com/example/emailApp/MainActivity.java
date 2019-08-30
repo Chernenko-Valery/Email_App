@@ -1,17 +1,12 @@
 package com.example.emailApp;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    ///** Поле - приёмщик сообщений */
+    ///** BroadcastReceiver */
     //MailReceiver mMailReceiver = new MailReceiver();
 
     @Override
