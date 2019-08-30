@@ -28,7 +28,7 @@ public class SignInFragment extends Fragment {
         // Required empty public constructor
     }
 
-    private static final String UNREAD_MESSAGE_COUNT_MESSAGE = "Count of undead messages = ";
+    private static final String UNREAD_MESSAGE_COUNT_MESSAGE = "Count of unread messages = ";
     private static final String ERROR_MESSAGE = "Error with code: ";
 
     /** EditText with login without server */
