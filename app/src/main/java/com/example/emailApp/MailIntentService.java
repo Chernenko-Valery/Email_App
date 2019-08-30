@@ -7,6 +7,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
+import android.util.Pair;
 
 import com.example.emailApp.yandex.YandexEmailReader;
 
@@ -45,14 +46,14 @@ public class MailIntentService extends IntentService {
             Messenger messenger = bundle.getParcelable(MESSENGER_TAG);
             if (server!=null && server.equals(YANDEX_SERVER)) {
                 YandexEmailReader yandexEmailReader = new YandexEmailReader(login, password);
-                int unreadMessageCount = yandexEmailReader.getUnreadMessageCount(yandexEmailReader.getSession());
-                Log.d(TAG, Integer.toString(unreadMessageCount));
+                Pair<Integer, String> unreadMessageCount = yandexEmailReader.getUnreadMessageCount(yandexEmailReader.getSession());
+                Log.d(TAG, Integer.toString(unreadMessageCount.first));
                 //Intent unreadMessageCountIntent = new Intent(MailReceiver.UNREAD_MESSAGE_COUNT_INTENT_FLAG);
                 //unreadMessageCountIntent.putExtra(MailReceiver.UNREAD_MESSAGE_COUNT_TAG, unreadMessageCount);
                 //sendBroadcast(unreadMessageCountIntent);
                 Message msg = new Message();
                 msg.what = UNREAD_MESSAGE_COUNT_WHAT_TAG;
-                msg.arg1 = unreadMessageCount;
+                msg.obj = unreadMessageCount;
                 try {
                     if (messenger != null) messenger.send(msg);
                 } catch (RemoteException aE) {

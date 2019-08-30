@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +30,7 @@ public class SignInFragment extends Fragment {
     }
 
     private static final String UNREAD_MESSAGE_COUNT_MESSAGE = "Count of unread messages = ";
-    private static final String ERROR_MESSAGE = "Error with code: ";
+    private static final String ERROR_MESSAGE = "Error: ";
 
     /** EditText with login without server */
     private EditText mLogin;
@@ -43,12 +44,13 @@ public class SignInFragment extends Fragment {
         @Override
         public void handleMessage(@NonNull Message aMsg) {
             if(aMsg.what == MailIntentService.UNREAD_MESSAGE_COUNT_WHAT_TAG) {
-                if(aMsg.arg1 >= 0) {
+                final Pair<Integer, String> unreadMessageCount = (Pair<Integer, String>) aMsg.obj;
+                if(unreadMessageCount.first >= 0) {
                     Toast.makeText(getContext(), UNREAD_MESSAGE_COUNT_MESSAGE
-                            + aMsg.arg1, Toast.LENGTH_LONG).show();
+                            + unreadMessageCount.first, Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(getContext(), ERROR_MESSAGE
-                            + aMsg.arg1, Toast.LENGTH_SHORT).show();
+                            + unreadMessageCount.second, Toast.LENGTH_SHORT).show();
                 }
             }
         }

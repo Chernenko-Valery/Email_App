@@ -11,6 +11,14 @@ public class EmailAuthenticator extends Authenticator {
     /** Password */
     private String mPassword;
 
+    public String getmEmail() {
+        return mEmail;
+    }
+
+    public String getmPassword() {
+        return mPassword;
+    }
+
     /**
      * Class constructor specifying email and password
      * @param aEmail - email

@@ -1,6 +1,7 @@
 package com.example.emailApp.yandex;
 
 import android.util.Log;
+import android.util.Pair;
 
 import com.example.emailApp.EmailAuthenticator;
 
@@ -25,10 +26,6 @@ public class YandexEmailReader {
     private static final Integer IMAP_PORT = 993;
 
     private static final String INBOX = "INBOX";
-
-    /** Error Code */
-    private static final int NO_SUCH_PROVIDER_ERROR_CODE = -1;
-    private static final int MESSAGING_ERROR_CODE = -2;
 
     /** Email */
     private final String mEmail;
@@ -57,36 +54,40 @@ public class YandexEmailReader {
         properties.put("mail.imap.ssl.enable", "true");
         properties.put("mail.imap.port", Integer.toString(IMAP_PORT));
 
-        final Authenticator authenticator = new EmailAuthenticator(mEmail, mPassword);
+        Authenticator authenticator = new EmailAuthenticator(mEmail, mPassword);
+        Log.d(TAG, ((EmailAuthenticator) authenticator).getmEmail());
+        Log.d(TAG, ((EmailAuthenticator) authenticator).getmPassword());
 
-        final Session session = Session.getDefaultInstance(properties, authenticator);
+        Session session = Session.getInstance(properties, authenticator);
         session.setDebug(false);
         return session;
     }
 
     /**
      * Method that returns count of unread messages in user's email
-     * @return count of unread messages if successful, error code as a negative number otherwise
+     * @return Pair<Integer, String> that first is count of unread message if successful
+     * or -1 otherwise, second is empty if successful or error message otherwise
      */
-    public int getUnreadMessageCount(Session aSession) {
+    public Pair<Integer, String> getUnreadMessageCount(Session aSession) {
         try {
-            final Store store = aSession.getStore();
+            Log.d(TAG, aSession.toString());
+
+            Store store = aSession.getStore();
             store.connect(IMAP_SERVER, mEmail, mPassword);
             Log.d(TAG, "Store is connected");
 
-            final Folder inbox = store.getFolder(INBOX);
+            Folder inbox = store.getFolder(INBOX);
             inbox.open(Folder.READ_ONLY);
             Log.d(TAG, INBOX + " Folder in opened");
 
-            return inbox.getUnreadMessageCount();
+            return new Pair<>(inbox.getUnreadMessageCount(), "");
         } catch (NoSuchProviderException aE) {
             if(aE.getMessage()!=null) Log.d(TAG, aE.getMessage());
-            //TODO define exception handling
-            return NO_SUCH_PROVIDER_ERROR_CODE;
+            return new Pair<>(-1, aE.getMessage());
         } catch (MessagingException aE) {
             if(aE.getMessage()!=null) Log.d(TAG, aE.getMessage());
-            //TODO define exception handling
-            return MESSAGING_ERROR_CODE;
+            //TODO sending other message if other problems
+            return new Pair<>(-1, aE.getMessage());
         }
     }
 
