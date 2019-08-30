@@ -1,41 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SignInFragment">
+    tools:context=".SignInFragment"
+    android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
         <TableLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <TableRow>
                 <TextView
-                    android:text="Email:"
+                    android:text="@string/email_prefix"
                     android:layout_weight="0.2"
-                    android:gravity="right"/>
+                    android:gravity="end"/>
                 <EditText
                     android:id="@+id/loginText"
+                    android:inputType="text"
                     android:selectAllOnFocus="true"
-                    android:hint="login"
+                    android:hint="@string/login_hint"
                     android:layout_weight="1" />
                 <TextView
-                    android:text="\@yandex.ru"
+                    android:text="@string/yandex_postfix"
                     android:layout_weight="0.25"/>
             </TableRow>
             <TableRow>
                 <TextView
-                    android:text="Password:"
+                    android:text="@string/password_prefix"
                     android:layout_weight="0.2"
-                    android:gravity="right"/>
+                    android:gravity="end"/>
                 <EditText
                     android:id="@+id/passwordText"
                     android:selectAllOnFocus="true"
                     android:inputType="textPassword"
-                    android:hint="password"
+                    android:hint="@string/password_hint"
                     android:layout_weight="1"/>
                 <TextView
                     android:text=""
@@ -44,10 +42,9 @@
         </TableLayout>
         <Button
             android:id="@+id/singInButton"
-            android:text="SIGN IN"
+            android:text="@string/sign_in_button_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"/>
-    </LinearLayout>
 
-</FrameLayout>
+</LinearLayout>
