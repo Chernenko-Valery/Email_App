@@ -24,6 +24,8 @@ public class YandexEmailReader {
     private static final String IMAP_SERVER = "imap." + SERVER;
     private static final Integer IMAP_PORT = 993;
 
+    private static final String INBOX = "INBOX";
+
     /** Error Code */
     private static final int NO_SUCH_PROVIDER_ERROR_CODE = -1;
     private static final int MESSAGING_ERROR_CODE = -2;
@@ -55,7 +57,7 @@ public class YandexEmailReader {
         properties.put("mail.imap.ssl.enable", "true");
         properties.put("mail.imap.port", Integer.toString(IMAP_PORT));
 
-        Authenticator authenticator = new EmailAuthenticator(mEmail, mPassword);
+        final Authenticator authenticator = new EmailAuthenticator(mEmail, mPassword);
 
         final Session session = Session.getDefaultInstance(properties, authenticator);
         session.setDebug(false);
@@ -64,8 +66,7 @@ public class YandexEmailReader {
 
     /**
      * Method that returns count of unread messages in user's email
-     * @return count of unread messages if successful,
-     * error code as a negative number otherwise
+     * @return count of unread messages if successful, error code as a negative number otherwise
      */
     public int getUnreadMessageCount(Session aSession) {
         try {
@@ -73,9 +74,9 @@ public class YandexEmailReader {
             store.connect(IMAP_SERVER, mEmail, mPassword);
             Log.d(TAG, "Store is connected");
 
-            final Folder inbox = store.getFolder("INBOX");
+            final Folder inbox = store.getFolder(INBOX);
             inbox.open(Folder.READ_ONLY);
-            Log.d(TAG, "INBOX Folder in opened");
+            Log.d(TAG, INBOX + " Folder in opened");
 
             return inbox.getUnreadMessageCount();
         } catch (NoSuchProviderException aE) {
