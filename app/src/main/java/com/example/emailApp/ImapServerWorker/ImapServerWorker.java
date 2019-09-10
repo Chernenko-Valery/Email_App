@@ -15,10 +15,10 @@ import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Store;
 
-/** Abstract class that interactive with imap mail server */
+/** Abstract class that interactive with imap mail server. */
 public class ImapServerWorker {
 
-    /** Debug tag */
+    /** Debug tag. */
     private static final String TAG = "ImapServerWorker";
 
     private static final String IMAP_PREFIX = "imap.";
@@ -70,10 +70,10 @@ public class ImapServerWorker {
     }
 
     /**
-     * Method that return new Store objects with parameters in class object
+     * Method that return new Store objects with parameters in class object.
      *
-     * @return new Session
-     * @throws MessagingException if fail
+     * @return new Session.
+     * @throws MessagingException if fail.
      */
     private Store getStore() throws MessagingException {
         final Session session = getSession();

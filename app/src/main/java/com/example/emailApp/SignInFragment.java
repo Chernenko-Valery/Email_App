@@ -12,7 +12,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,11 +27,8 @@ import com.example.emailApp.ImapServerWorker.ImapIntentService;
  */
 public class SignInFragment extends Fragment {
 
-    /** Debug tag. */
-    private static final String TAG = "SignInFragment";
-
-    private static final String UNREAD_MESSAGE_COUNT_TOAST_MESSAGE = "Unread message's count = ";
-    private static final String ERROR_TOAST_MESSAGE = "ERROR: ";
+    private static final String TOAST_UNREAD_MESSAGE_COUNT= "Unread message's count = ";
+    private static final String TOAST_ERROR = "ERROR: ";
 
     private static final String SERVER = "yandex.com";
 
@@ -45,14 +41,13 @@ public class SignInFragment extends Fragment {
     private final Handler mUiHandler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(@NonNull Message aMsg) {
-            Log.d(TAG, "new Message");
             if(aMsg.what == ImapIntentService.MSG_UNREAD_MESSAGE_COUNT) {
                 int unreadMessageCount = aMsg.arg1;
-                Toast.makeText(getContext(), UNREAD_MESSAGE_COUNT_TOAST_MESSAGE
+                Toast.makeText(getContext(), TOAST_UNREAD_MESSAGE_COUNT
                             + unreadMessageCount, Toast.LENGTH_LONG).show();
             } else if(aMsg.what == ImapIntentService.MSG_ERROR) {
                 String error = (String) aMsg.obj;
-                Toast.makeText(getContext(), ERROR_TOAST_MESSAGE
+                Toast.makeText(getContext(), TOAST_ERROR
                         + error, Toast.LENGTH_LONG).show();
             }
         }
@@ -83,11 +78,15 @@ public class SignInFragment extends Fragment {
                 intent.putExtra(ImapIntentService.EXTRA_PASSWORD, passwordText.getText().toString());
                 intent.putExtra(ImapIntentService.EXTRA_SERVER, SERVER);
                 intent.putExtra(ImapIntentService.EXTRA_MESSENGER, messenger);
-                if(getActivity()!= null) getActivity().startService(intent);
+                if(getActivity() != null) {
+                    getActivity().startService(intent);
+                }
 
                 //Hide input
                 InputMethodManager imm = (InputMethodManager) view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                if(imm!=null) imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                if (imm != null) {
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
             }
         });
         return view;
