@@ -33,6 +33,7 @@
                     android:id="@+id/passwordText"
                     android:selectAllOnFocus="true"
                     android:inputType="textPassword"
+                    android:imeOptions="actionDone"
                     android:hint="@string/password_hint"
                     android:layout_weight="1"/>
                 <TextView

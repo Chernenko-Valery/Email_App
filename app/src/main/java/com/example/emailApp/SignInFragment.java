@@ -1,5 +1,6 @@
 package com.example.emailApp;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -11,81 +12,85 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
-import android.util.Pair;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.emailApp.ImapServerWorker.ImapIntentService;
+
 /**
- * Fragment that containing fields for entering a login and password, and a button for entering
+ * Authorization fragment.
  */
 public class SignInFragment extends Fragment {
 
-    /** Class constructor */
-    public SignInFragment() {
-        // Required empty public constructor
-    }
+    /** Debug tag. */
+    private static final String TAG = "SignInFragment";
 
-    private static final String UNREAD_MESSAGE_COUNT_MESSAGE = "Count of unread messages = ";
-    private static final String ERROR_MESSAGE = "Error: ";
+    private static final String UNREAD_MESSAGE_COUNT_TOAST_MESSAGE = "Unread message's count = ";
+    private static final String ERROR_TOAST_MESSAGE = "ERROR: ";
 
-    /** EditText with login without server */
-    private EditText mLogin;
-    /** EditText with password */
-    private EditText mPassword;
+    private static final String SERVER = "yandex.com";
+
+    private EditText loginText;
+    private EditText passwordText;
 
     /**
-     * Handler for handling message from MailIntentService
+     * Handler for handling message from MailIntentService.
      */
     private final Handler mUiHandler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(@NonNull Message aMsg) {
-            if(aMsg.what == MailIntentService.UNREAD_MESSAGE_COUNT_WHAT_TAG) {
-                final Pair<Integer, String> unreadMessageCount = (Pair<Integer, String>) aMsg.obj;
-                if(unreadMessageCount.first >= 0) {
-                    Toast.makeText(getContext(), UNREAD_MESSAGE_COUNT_MESSAGE
-                            + unreadMessageCount.first, Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(getContext(), ERROR_MESSAGE
-                            + unreadMessageCount.second, Toast.LENGTH_SHORT).show();
-                }
+            Log.d(TAG, "new Message");
+            if(aMsg.what == ImapIntentService.MSG_UNREAD_MESSAGE_COUNT) {
+                int unreadMessageCount = aMsg.arg1;
+                Toast.makeText(getContext(), UNREAD_MESSAGE_COUNT_TOAST_MESSAGE
+                            + unreadMessageCount, Toast.LENGTH_LONG).show();
+            } else if(aMsg.what == ImapIntentService.MSG_ERROR) {
+                String error = (String) aMsg.obj;
+                Toast.makeText(getContext(), ERROR_TOAST_MESSAGE
+                        + error, Toast.LENGTH_LONG).show();
             }
         }
     };
 
-    /**
-     * Messenger for interaction with MailIntentService
-     */
-    private final Messenger mMessenger = new Messenger(mUiHandler);
-
-    @Override
-    public View onCreateView(final @NonNull LayoutInflater aInflater, ViewGroup aContainer,
-                             Bundle aSavedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = aInflater.inflate(R.layout.fragment_sign_in, aContainer, false);
-        mLogin = view.findViewById(R.id.loginText);
-        mPassword = view.findViewById(R.id.passwordText);
-        final Button signInButton = view.findViewById(R.id.singInButton);
-        signInButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), MailIntentService.class);
-                intent.putExtra(MailIntentService.LOGIN_TAG, mLogin.getText().toString() + "@yandex.com");
-                intent.putExtra(MailIntentService.PASSWORD_TAG, mPassword.getText().toString());
-                intent.putExtra(MailIntentService.SERVER_TAG, "yandex.com");
-                intent.putExtra(MailIntentService.MESSENGER_TAG, mMessenger);
-                if(getActivity()!=null) getActivity().startService(intent);
-            }
-        });
-        return view;
-    }
+    private Messenger messenger = new Messenger(mUiHandler);
 
     @Override
     public void onCreate(@Nullable Bundle aSavedInstanceState) {
         super.onCreate(aSavedInstanceState);
         setRetainInstance(true);
     }
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater aInflater, @Nullable ViewGroup aContainer,
+                             @Nullable Bundle aSavedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = aInflater.inflate(R.layout.fragment_sign_in, aContainer, false);
+        Button signInButton = view.findViewById(R.id.singInButton);
+        loginText = view.findViewById(R.id.loginText);
+        passwordText = view.findViewById(R.id.passwordText);
+        signInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), ImapIntentService.class);
+                intent.setAction(ImapIntentService.UNREAD_MESSAGE_COUNT_ACTION);
+                intent.putExtra(ImapIntentService.EXTRA_LOGIN, loginText.getText().toString());
+                intent.putExtra(ImapIntentService.EXTRA_PASSWORD, passwordText.getText().toString());
+                intent.putExtra(ImapIntentService.EXTRA_SERVER, SERVER);
+                intent.putExtra(ImapIntentService.EXTRA_MESSENGER, messenger);
+                if(getActivity()!= null) getActivity().startService(intent);
+
+                //Hide input
+                InputMethodManager imm = (InputMethodManager) view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                if(imm!=null) imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
+        });
+        return view;
+    }
+
 }
