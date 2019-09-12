@@ -2,6 +2,7 @@ package com.example.emailApp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -20,6 +21,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.emailApp.ImapServerWorker.ImapForegroundService;
 import com.example.emailApp.ImapServerWorker.ImapIntentService;
 
 /**
@@ -32,8 +34,18 @@ public class SignInFragment extends Fragment {
 
     private static final String SERVER = "yandex.com";
 
+    private static final String APP_PREFERENCES = "emailPreferences";
+
+    private static final String APP_PREFERENCES_LOGIN = "login"; // имя кота
+    private static final String APP_PREFERENCES_PASSWORD = "password"; // возраст кота
+
+    /** Field - login EditText. */
     private EditText loginText;
+    /** Field - password EditText. */
     private EditText passwordText;
+
+    /**Field - Shared Preferences. */
+    private SharedPreferences mPreferences;
 
     /**
      * Handler for handling message from MailIntentService.
@@ -53,12 +65,25 @@ public class SignInFragment extends Fragment {
         }
     };
 
-    private Messenger messenger = new Messenger(mUiHandler);
+    private Messenger mMessenger = new Messenger(mUiHandler);
 
     @Override
     public void onCreate(@Nullable Bundle aSavedInstanceState) {
         super.onCreate(aSavedInstanceState);
+        if(getActivity() != null) {
+            mPreferences = getActivity().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+        }
         setRetainInstance(true);
+    }
+
+    /** Hide input keyboard. */
+    private void hideInput() {
+        if(getContext() != null) {
+            InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null && getView() != null) {
+                imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
+            }
+        }
     }
 
     @Override
@@ -66,9 +91,18 @@ public class SignInFragment extends Fragment {
                              @Nullable Bundle aSavedInstanceState) {
         // Inflate the layout for this fragment
         View view = aInflater.inflate(R.layout.fragment_sign_in, aContainer, false);
-        Button signInButton = view.findViewById(R.id.singInButton);
+
         loginText = view.findViewById(R.id.loginText);
+        if(mPreferences.contains(APP_PREFERENCES_LOGIN)) {
+            loginText.setText(mPreferences.getString(APP_PREFERENCES_LOGIN, ""));
+        }
+
         passwordText = view.findViewById(R.id.passwordText);
+        if(mPreferences.contains(APP_PREFERENCES_PASSWORD)) {
+            passwordText.setText(mPreferences.getString(APP_PREFERENCES_PASSWORD, ""));
+        }
+
+        Button signInButton = view.findViewById(R.id.singInButton);
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -77,19 +111,52 @@ public class SignInFragment extends Fragment {
                 intent.putExtra(ImapIntentService.EXTRA_LOGIN, loginText.getText().toString());
                 intent.putExtra(ImapIntentService.EXTRA_PASSWORD, passwordText.getText().toString());
                 intent.putExtra(ImapIntentService.EXTRA_SERVER, SERVER);
-                intent.putExtra(ImapIntentService.EXTRA_MESSENGER, messenger);
+                intent.putExtra(ImapIntentService.EXTRA_MESSENGER, mMessenger);
                 if(getActivity() != null) {
                     getActivity().startService(intent);
                 }
 
-                //Hide input
-                InputMethodManager imm = (InputMethodManager) view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                if (imm != null) {
-                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                hideInput();
+            }
+        });
+
+        Button startForegroundButton = view.findViewById(R.id.startForegroundButton);
+        startForegroundButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), ImapForegroundService.class);
+                intent.putExtra(ImapForegroundService.EXTRA_LOGIN, loginText.getText().toString());
+                intent.putExtra(ImapForegroundService.EXTRA_PASSWORD, passwordText.getText().toString());
+                intent.putExtra(ImapForegroundService.EXTRA_SERVER, SERVER);
+                if(getActivity() != null) {
+                    getActivity().startService(intent);
                 }
+
+                hideInput();
+            }
+        });
+
+        Button stopForegroundButton = view.findViewById(R.id.stopForegroundButton);
+        stopForegroundButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), ImapForegroundService.class);
+                if(getActivity() != null) {
+                    getActivity().stopService(intent);
+                }
+
+                hideInput();
             }
         });
         return view;
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        SharedPreferences.Editor editor = mPreferences.edit();
+        editor.putString(APP_PREFERENCES_LOGIN, loginText.getText().toString());
+        editor.putString(APP_PREFERENCES_PASSWORD, passwordText.getText().toString());
+        editor.apply();
+    }
 }

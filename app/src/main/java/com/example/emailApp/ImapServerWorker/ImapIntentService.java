@@ -36,7 +36,7 @@ public class ImapIntentService extends IntentService {
     }
 
     @Override
-    protected void onHandleIntent(@Nullable Intent intent) {
+    protected void onHandleIntent(@Nullable final Intent intent) {
         if (intent != null) {
             final String action = intent.getAction();
             if(UNREAD_MESSAGE_COUNT_ACTION.equals(action)) {

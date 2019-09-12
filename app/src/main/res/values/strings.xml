@@ -9,4 +9,6 @@
     <string name="password_prefix">Password:</string>
     <string name="password_hint">password</string>
     <string name="sign_in_button_text">Sign in</string>
+    <string name="start_foreground_service">Start Service</string>
+    <string name="stop_foreground_service">Stop Service</string>
 </resources>

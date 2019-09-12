@@ -18,7 +18,7 @@ public final class EmailAuthenticator extends Authenticator {
      * @param aEmail - email.
      * @param aPassword - password.
      */
-    public EmailAuthenticator(@NonNull String aEmail,@NonNull String aPassword) {
+    public EmailAuthenticator(@NonNull final String aEmail, @NonNull final String aPassword) {
         mEmail = aEmail;
         mPassword = aPassword;
     }
