@@ -1,4 +1,4 @@
-package com.example.email_app;
+package com.example.emailApp;
 
 import org.junit.Test;
 
